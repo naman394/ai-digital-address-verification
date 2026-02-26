@@ -45,14 +45,14 @@ function cn(...inputs: ClassValue[]) {
 // --- Components ---
 
 const Header = ({ title, subtitle }: { title: string; subtitle?: string }) => (
-  <header className="mb-8">
+  <header className="mb-6">
     <div className="flex items-center gap-3 mb-2">
-      <div className="p-2 bg-indigo-600 rounded-lg text-white">
-        <ShieldCheck size={24} />
+      <div className="p-2 bg-indigo-600 rounded-lg text-white flex-shrink-0">
+        <ShieldCheck size={20} />
       </div>
-      <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
+      <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
     </div>
-    {subtitle && <p className="text-slate-500 font-medium">{subtitle}</p>}
+    {subtitle && <p className="text-slate-500 font-medium text-sm sm:text-base">{subtitle}</p>}
   </header>
 );
 
@@ -154,17 +154,17 @@ export default function App() {
       }
       // 'done' — final screen, no way out to admin
       return (
-        <div className="flex flex-col items-center justify-center py-28 text-center">
-          <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-8 shadow-md">
-            <CheckCircle2 size={56} />
+        <div className="flex flex-col items-center justify-center py-16 sm:py-28 text-center px-4">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6 sm:mb-8 shadow-md">
+            <CheckCircle2 size={48} />
           </div>
-          <h2 className="text-4xl font-extrabold mb-3 tracking-tight">Verification Submitted!</h2>
-          <p className="text-slate-500 max-w-md text-lg">
+          <h2 className="text-2xl sm:text-4xl font-extrabold mb-3 tracking-tight">Verification Submitted!</h2>
+          <p className="text-slate-500 max-w-md text-base sm:text-lg">
             Thank you for completing the address verification process. Our team will review your submission and get back to you shortly.
           </p>
-          <div className="mt-10 px-8 py-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+          <div className="mt-8 sm:mt-10 px-6 sm:px-8 py-4 bg-indigo-50 rounded-2xl border border-indigo-100 w-full max-w-xs">
             <p className="text-indigo-700 font-semibold text-sm">Your reference ID</p>
-            <p className="text-indigo-900 font-mono font-bold text-lg mt-1">{submittedRefId || verifyId}</p>
+            <p className="text-indigo-900 font-mono font-bold text-base sm:text-lg mt-1">{submittedRefId || verifyId}</p>
           </div>
         </div>
       );
@@ -198,19 +198,19 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      <nav className="bg-white border-b border-slate-200 px-6 py-4 sticky top-0 z-50">
+      <nav className="bg-white border-b border-slate-200 px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           {/* Logo: applicants see no clickable nav action */}
           <div className={cn("flex items-center gap-2", !isApplicant && "cursor-pointer")} onClick={() => !isApplicant && setView('admin')}>
-            <ShieldCheck className="text-indigo-600" size={28} />
-            <span className="text-xl font-bold tracking-tighter">VERIADDRESS</span>
+            <ShieldCheck className="text-indigo-600" size={24} />
+            <span className="text-lg sm:text-xl font-bold tracking-tighter">VERIADDRESS</span>
           </div>
           {/* Admin nav links — hidden completely for applicants */}
           {!isApplicant && (
-            <div className="flex gap-4">
+            <div className="flex gap-2">
               <button
                 onClick={() => setView('admin')}
-                className={cn("text-sm font-medium px-3 py-1 rounded-full transition-colors", view === 'admin' ? "bg-indigo-50 text-indigo-600" : "text-slate-500 hover:text-slate-900")}
+                className={cn("text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full transition-colors", view === 'admin' ? "bg-indigo-50 text-indigo-600" : "text-slate-500 hover:text-slate-900")}
               >
                 Admin Dashboard
               </button>
@@ -219,7 +219,7 @@ export default function App() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         <AnimatePresence mode="wait">
           <motion.div
             key={view + (selectedId || '')}
@@ -473,7 +473,7 @@ function ApplicantForm({ onComplete, initialId }: { onComplete: (refId: string) 
         })}
       </div>
 
-      <Card className="p-8">
+      <Card className="p-4 sm:p-8">
         {step === 'personal' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -551,7 +551,7 @@ function ApplicantForm({ onComplete, initialId }: { onComplete: (refId: string) 
 
         {step === 'photos' && (
           <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
               <PhotoUpload
                 label="Selfie"
                 icon={<User />}
@@ -762,32 +762,33 @@ function AdminDashboard({ onSelect, user, onSignOut }: { onSelect: (id: string) 
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+    <div className="flex flex-col gap-4">
+      {/* Toolbar */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
           <Header title="Verification Dashboard" subtitle="Manage and review all residential address verifications." />
-          <div className="flex items-center gap-4 text-slate-500 -mt-2">
+          <div className="flex items-center gap-4 text-slate-500 -mt-2 flex-wrap">
             <span className="text-sm">Logged in as: <strong className="text-slate-700">{user.email}</strong></span>
             <button onClick={onSignOut} className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold uppercase tracking-wider">Sign out</button>
           </div>
         </div>
-        <div className="flex gap-4 w-full md:w-auto">
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+        <div className="flex flex-wrap gap-2 sm:gap-3">
+          <div className="relative flex-1 sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search ID..."
-              className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+              placeholder="Search..."
+              className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all"
             />
           </div>
-          <Button onClick={generateLink} className="whitespace-nowrap flex-shrink-0">
+          <Button onClick={generateLink} className="whitespace-nowrap px-3 py-2 text-sm">
             Create Link
           </Button>
           {verifications.length > 0 && (
             <button
               onClick={handleDeleteAll}
-              className="whitespace-nowrap flex-shrink-0 px-4 py-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-sm font-semibold transition-colors"
+              className="whitespace-nowrap px-3 py-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-sm font-semibold transition-colors"
             >
               Delete All
             </button>
@@ -807,15 +808,15 @@ function AdminDashboard({ onSelect, user, onSignOut }: { onSelect: (id: string) 
       )}
 
       <Card>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto -mx-0">
+          <table className="w-full text-left border-collapse" style={{ minWidth: '600px' }}>
             <thead>
               <tr className="bg-slate-50 border-bottom border-slate-200">
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Applicant</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ref ID</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Action</th>
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Applicant</th>
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ref ID</th>
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-xs font-bold text-slate-500 uppercase tracking-wider hidden sm:table-cell">Date</th>
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -825,25 +826,25 @@ function AdminDashboard({ onSelect, user, onSignOut }: { onSelect: (id: string) 
                 <tr><td colSpan={5} className="px-6 py-12 text-center text-slate-500">No verifications found.</td></tr>
               ) : filtered.map((v) => (
                 <tr key={v.id} className="hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => onSelect(v.id)}>
-                  <td className="px-6 py-4">
-                    <div className="font-bold text-slate-900">{v.name}</div>
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
+                    <div className="font-bold text-slate-900 text-sm">{v.name}</div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{v.ref_id || 'N/A'}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{v.verification_date}</td>
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-slate-600 font-mono">{v.ref_id || 'N/A'}</td>
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-slate-600 hidden sm:table-cell">{v.verification_date}</td>
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     <span className={cn(
-                      "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider",
+                      "px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider",
                       v.verification_status === 'pass' ? "bg-emerald-100 text-emerald-700" :
                         v.verification_status === 'fail' ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
                     )}>
                       {v.verification_status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 flex gap-2">
-                    <Button variant="outline" className="px-3 py-1 text-xs">View Report</Button>
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 flex gap-1 sm:gap-2">
+                    <Button variant="outline" className="px-2 sm:px-3 py-1 text-xs">View</Button>
                     <button
                       onClick={(e) => handleDelete(v.id, e)}
-                      className="px-3 py-1 text-xs rounded-lg border border-red-200 text-red-600 hover:bg-red-50 font-semibold transition-colors"
+                      className="px-2 sm:px-3 py-1 text-xs rounded-lg border border-red-200 text-red-600 hover:bg-red-50 font-semibold transition-colors"
                     >
                       Delete
                     </button>
