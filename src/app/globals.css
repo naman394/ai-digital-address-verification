@@ -15,6 +15,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -25,17 +26,60 @@
 }
 
 @media print {
+
+  /* Hide everything except the report */
+  nav,
   .no-print {
     display: none !important;
   }
+
   .print-only {
     display: block;
   }
+
+  /* Reset page layout */
+  html,
   body {
-    background: white;
+    background: white !important;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
   }
+
   main {
     padding: 0 !important;
     max-width: none !important;
+  }
+
+  /* Report fills the page */
+  #verification-report {
+    width: 100% !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+
+  /* Avoid breaking inside evidence/photo cards */
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  table {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Keep each section together on one page */
+  .page-break-inside-avoid {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Show full-size base64 images without display:none tricks */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }

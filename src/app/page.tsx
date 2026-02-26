@@ -26,8 +26,7 @@ import { twMerge } from 'tailwind-merge';
 import { format } from 'date-fns';
 import { VerificationData, Step } from '@/types';
 import { GoogleGenAI } from "@google/genai";
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+
 import dynamic from 'next/dynamic';
 import type { MapProps } from '@/components/Map';
 import { auth } from '@/lib/firebase';
@@ -862,8 +861,6 @@ function AdminDashboard({ onSelect, user, onSignOut }: { onSelect: (id: string) 
 function VerificationReport({ id, onBack }: { id: string; onBack: () => void }) {
   const [data, setData] = useState<VerificationData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [exporting, setExporting] = useState(false);
-  const reportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch(`/api/verifications/${id}`)
@@ -874,33 +871,13 @@ function VerificationReport({ id, onBack }: { id: string; onBack: () => void }) 
       });
   }, [id]);
 
-  const handleExportPDF = async () => {
-    if (!reportRef.current) return;
-
-    setExporting(true);
-    try {
-      const canvas = await html2canvas(reportRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        allowTaint: true,
-        ignoreElements: (element) => element.tagName === 'IFRAME'
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`verification-report-${data?.id || 'export'}.pdf`);
-    } catch (error) {
-      console.error("PDF Export failed:", error);
-      alert("Failed to export PDF. Please try using the Print option.");
-    } finally {
-      setExporting(false);
-    }
+  const handleExportPDF = () => {
+    // Use the browser's native print-to-PDF — works in all environments
+    // No html2canvas, no CORS issues, no canvas memory problems
+    const prevTitle = document.title;
+    document.title = `Verification-Report-${data?.ref_id || data?.id || 'export'}`;
+    window.print();
+    document.title = prevTitle;
   };
 
   if (loading) return <div className="py-20 text-center text-slate-500">Loading report...</div>;
@@ -911,8 +888,8 @@ function VerificationReport({ id, onBack }: { id: string; onBack: () => void }) 
     : 0.1;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="max-w-5xl mx-auto space-y-8" id="verification-report">
+      <div className="flex items-center justify-between no-print">
         <button onClick={onBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-900 font-medium transition-colors">
           <ArrowLeft size={20} /> Back to Dashboard
         </button>
@@ -922,21 +899,14 @@ function VerificationReport({ id, onBack }: { id: string; onBack: () => void }) 
           </Button>
           <Button
             onClick={handleExportPDF}
-            disabled={exporting}
             className="px-4 py-2 text-sm flex items-center gap-2"
           >
-            {exporting ? (
-              <>Generating...</>
-            ) : (
-              <>
-                <Download size={16} /> Export PDF
-              </>
-            )}
+            <Download size={16} /> Export PDF
           </Button>
         </div>
       </div>
 
-      <div ref={reportRef} className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden print:shadow-none print:border-slate-300">
+      <div className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden print:shadow-none print:border-slate-300">
         <div className="bg-indigo-900 text-white px-8 py-4 flex justify-between items-center">
           <h2 className="text-xl font-bold tracking-tight">Employee Residential Address Verification Form</h2>
           <div className="text-xs font-mono opacity-70">ID: {data.id}</div>
