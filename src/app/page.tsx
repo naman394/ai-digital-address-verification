@@ -861,6 +861,7 @@ function AdminDashboard({ onSelect, user, onSignOut }: { onSelect: (id: string) 
 function VerificationReport({ id, onBack }: { id: string; onBack: () => void }) {
   const [data, setData] = useState<VerificationData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     fetch(`/api/verifications/${id}`)
@@ -871,13 +872,26 @@ function VerificationReport({ id, onBack }: { id: string; onBack: () => void }) 
       });
   }, [id]);
 
-  const handleExportPDF = () => {
-    // Use the browser's native print-to-PDF — works in all environments
-    // No html2canvas, no CORS issues, no canvas memory problems
-    const prevTitle = document.title;
-    document.title = `Verification-Report-${data?.ref_id || data?.id || 'export'}`;
-    window.print();
-    document.title = prevTitle;
+  const handleExportPDF = async () => {
+    if (!data) return;
+    setExporting(true);
+    try {
+      // Dynamically import to avoid SSR issues
+      const { pdf } = await import('@react-pdf/renderer');
+      const { VerificationPDF } = await import('@/components/VerificationPDF');
+      const blob = await pdf(<VerificationPDF data={data} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Verification-${data.ref_id || data.id}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error('PDF generation failed:', e);
+      alert('PDF export failed. Please try the Print option.');
+    } finally {
+      setExporting(false);
+    }
   };
 
   if (loading) return <div className="py-20 text-center text-slate-500">Loading report...</div>;
@@ -899,9 +913,10 @@ function VerificationReport({ id, onBack }: { id: string; onBack: () => void }) 
           </Button>
           <Button
             onClick={handleExportPDF}
+            disabled={exporting}
             className="px-4 py-2 text-sm flex items-center gap-2"
           >
-            <Download size={16} /> Export PDF
+            <Download size={16} />{exporting ? ' Generating…' : ' Export PDF'}
           </Button>
         </div>
       </div>
